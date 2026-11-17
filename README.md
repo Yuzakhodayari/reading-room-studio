@@ -6,7 +6,7 @@ Frame-accurate Remotion graphics engine, AI transcript director, and DaVinci Res
 
 ## Visual System: Dual Palette
 
-Every beat follows strict scene separation between full-screen documentary cutaways and camera overlays:
+Every beat follows strict scene separation between full-screen documentary cutaways and camera overlays. See [`docs/STYLE_CATALOG.md`](docs/STYLE_CATALOG.md) for exact line-by-line links across all **24 visual styles** and **11 core system modules**.
 
 | Mode | Canvas / Surface | Typography & Accents |
 |---|---|---|
@@ -24,23 +24,35 @@ Every beat follows strict scene separation between full-screen documentary cutaw
 
 ## Repository Layout
 
-- `studio/`: Remotion `4.0.544` TypeScript studio (`src/design/`, `src/components/glass/`, `src/motion/`, `src/styles/`, `src/typography/`, `src/director/`, `src/compositions/`), LUTs (`luts/`), procedural SFX assets (`public/sfx/`), and Node CLI scripts (`scripts/`).
-- `tools/`: Python transcription, MediaPipe/OpenCV room swap utilities, media verification (`transcribe.py`, `room_object_swap.py`, `benchmark_media.py`), and the master orchestrator (`run_pipeline.mjs`).
+- `studio/`: Remotion `4.0.544` TypeScript studio (`src/design/`, `src/components/glass/`, `src/motion/`, `src/styles/`, `src/typography/`, `src/director/`, `src/compositions/`), LUTs (`luts/`), procedural SFX assets (`public/sfx/`), environment template (`.env.example`), and Node CLI scripts (`scripts/`).
+- `tools/`: Pinned Python dependencies (`requirements.txt`), transcription (`transcribe.py`), MediaPipe/Gemini room swap utilities (`room_object_swap.py`), media verification (`benchmark_media.py`), and master orchestrator (`run_pipeline.mjs`).
+- `docs/`: Full style and module code index ([`STYLE_CATALOG.md`](docs/STYLE_CATALOG.md)) and compressed reference stills (`docs/previews/`).
 - `scripts/`: Script source files (`scripts/1/19.4.md`).
-- `docs/previews/`: Compressed PNG reference stills for documentation.
+- Sibling script-writing skills repository: [Yuzakhodayari/channel-script-skills](https://github.com/Yuzakhodayari/channel-script-skills).
 
-## Setup
+## Quick Setup
 
-### 1. Node & Remotion Studio
-```bash
-cd studio
-npm install
-npm run sfx:build
-npm run lint
+### One-Command Installer
+
+Run from the repository root. Both scripts verify Node.js `>= 20`, check or install `ffmpeg` and `uv`, create a Python 3.12 environment at `tools/.venv` from [`tools/requirements.txt`](tools/requirements.txt), download `tools/models/selfie_segmenter.tflite` (~244 KB), install `studio/` npm packages, build SFX WAVs, and run `npm run lint`.
+
+**Windows (PowerShell):**
+```powershell
+.\setup.ps1
 ```
 
-### 2. Python Tooling (`tools/.venv`)
-Requires Python 3.12 (`tools/.venv`) with `faster-whisper`, `soundfile`, `opencv-python`, `mediapipe`, `numpy`, and `Pillow`, plus `ffmpeg` and `ffprobe` on `PATH`.
+**macOS / Linux:**
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+
+Optional installer flags:
+- `-WithScriptSkills` / `--with-script-skills`: clones `Yuzakhodayari/channel-script-skills` into `channel-script-skills/`.
+- `-WithUpstreamRefs` / `--with-upstream-refs`: clones third-party upstream reference repositories (`lemomo-ai/lemo-opuscar`, `Vincentwei1021/mg-styles-15`) into `_refs/`.
+- `-SkipModelDownload` / `--skip-model-download`: skips downloading `selfie_segmenter.tflite`.
+
+If you plan to run Gemini image or video room swaps (`tools/room_object_swap.py`), copy [`studio/.env.example`](studio/.env.example) to `studio/.env` and set `GEMINI_API_KEY`.
 
 ## Usage & Pipeline Commands
 
@@ -70,12 +82,12 @@ Run commands inside `studio/` unless noted otherwise:
 
 ## Verification
 
-Run the Node/Remotion benchmark and automated PIL/NumPy readability audit from `studio/`:
+Run the Node/Remotion benchmark and full PIL/NumPy/FFmpeg verification suite from `studio/`:
 
 ```bash
 npm run lint
 node scripts/benchmark-exam.mjs
-python ../tools/benchmark_media.py
+..\tools\.venv\Scripts\python.exe ..\tools\benchmark_media.py
 ```
 
-`benchmark-exam.mjs` verifies all 24 style mappings, 57 motion primitives, typography pacing, director retention constraints, 32 PNG still renders, H.264/VP9/ProRes render speed, and pixel-level contrast/color compliance.
+`benchmark-exam.mjs` verifies all 24 style mappings, 57 motion primitives, typography pacing, director retention constraints, 32 PNG still renders, H.264/VP9/ProRes render speed, and pixel contrast/color compliance. `benchmark_media.py` additionally runs A-roll prep, Whisper transcription, MediaPipe/Gemini room swap workflows, DaVinci FCPXML integrity, alpha-channel checks, and live end-to-end pipeline execution.

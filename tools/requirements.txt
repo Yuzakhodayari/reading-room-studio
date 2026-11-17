@@ -1,0 +1,13 @@
+# The Reading Room — Python Media, Transcription & Room-Swap Runtime
+# Validated on Python 3.12.16 inside tools/.venv
+faster-whisper==1.2.1
+mediapipe==1.2.3
+opencv-python-headless==5.0.0.93
+opencv-contrib-python==5.0.0.93
+pillow==13.0.0
+soundfile==0.14.0
+numpy==2.5.5
+scipy==1.18.1
+matplotlib==3.11.2
+google-genai==3.3.0
+socksio==1.0.0

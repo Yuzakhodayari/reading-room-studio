@@ -857,13 +857,23 @@ def run_exam5_swap() -> dict[str, Any]:
     )
     gem_ok = gem_res["returncode"] == 0 and '"model":' in gem_res["stdout"]
 
-    # 3. omni-edit (dry-run default)
+    # 3. omni-edit (dry-run default writes <out>.omni-job.json manifest)
     omni_res = run_cmd(
         [str(VENV_PYTHON), swap_py, "omni-edit", str(src_video), "--duration", "3", "--out", str(omni_out)],
         cwd=REPO_ROOT,
     )
-    omni_manifest = omni_out.with_name(f"{src_video.stem}_omni_manifest.json")
-    omni_ok = omni_res["returncode"] == 0 and omni_manifest.exists()
+    omni_manifest = omni_out.with_suffix(".omni-job.json")
+    omni_manifest_valid = False
+    if omni_manifest.exists():
+        try:
+            omni_data = json.loads(omni_manifest.read_text(encoding="utf-8"))
+            omni_manifest_valid = (
+                omni_data.get("model") == "gemini-omni-1.2-flash"
+                and isinstance(omni_data.get("omniSkillCommand"), list)
+            )
+        except Exception:
+            omni_manifest_valid = False
+    omni_ok = omni_res["returncode"] == 0 and omni_manifest_valid
 
     # 4. auto-person-mask --composite-plate
     res = run_cmd(
@@ -1225,7 +1235,17 @@ def run_live_e2e() -> dict[str, Any]:
         else None
     )
 
-    # Also test render-overlays --codec vp9 --limit 1 --dry-run to verify vp9 --pixel-format=yuva420p
+    # Also test render-overlays --codec vp9 --dry-run covering the first transparent overlay beat
+    vp9_limit = 2
+    if plan_file.exists():
+        plan_obj = json.loads(plan_file.read_text(encoding="utf-8"))
+        graphic_beats = [b for b in plan_obj.get("beats", []) if b.get("framing") != "talking-head-full"]
+        first_overlay_idx = next(
+            (i + 1 for i, b in enumerate(graphic_beats) if b.get("framing") != "fullscreen-cutaway"),
+            1,
+        )
+        vp9_limit = first_overlay_idx
+
     vp9_dry = run_cmd(
         [
             "node",
@@ -1234,7 +1254,7 @@ def run_live_e2e() -> dict[str, Any]:
             "--codec",
             "vp9",
             "--limit",
-            "1",
+            str(vp9_limit),
             "--dry-run",
         ],
         cwd=STUDIO_DIR,
