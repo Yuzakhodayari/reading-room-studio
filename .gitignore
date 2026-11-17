@@ -1,0 +1,47 @@
+# Dependencies & build caches
+node_modules/
+studio/node_modules/
+studio/build/
+studio/dist/
+studio/.remotion/
+.remotion/
+.cache/
+
+# Rendered media & benchmark outputs
+studio/out/
+*.mp4
+*.mov
+*.webm
+*.mkv
+*.mp3
+
+# Python environments & ML models
+tools/.venv/
+.venv/
+__pycache__/
+*.pyc
+tools/models/
+*.tflite
+
+# External reference repos, embedded skill repo & local production projects
+_refs/
+channel-script-skills/
+projects/
+
+# Scratch / archived folders & raw source audio/pdfs
+Archives/
+Archives/**/*.wav
+channel stratgy/
+blind test/
+scripts example/
+scripts/1/blind_test_samples/
+scripts/1/19.3.pdf
+scripts/1/19.4.pdf
+scripts/1/v19_3_spoken.md
+scripts/**/*.wav
+
+# Secrets, environment & OS metadata
+.env
+.env.*
+.DS_Store
+Thumbs.db
